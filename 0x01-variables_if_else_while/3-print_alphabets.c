@@ -1,15 +1,28 @@
 #include <stdio.h>
 
-/* printing the alphabet */
+/**
+  * main - main function
+  * Return: 0 on success
+  */
 int main(void)
 {
-	char c;
+	char loweralpha;
+	char upperalpha;
 
-	for (c = 'a'; c <= 'z'; c++)
-		putchar(c);
-	for (c = 'A'; c <= 'Z'; c++)
-		putchar(c);
-		putchar('\n');
+	loweralpha = 'a';
+	while (loweralpha <= 'z')
+	{
+		putchar(loweralpha);
+		loweralpha++;
+	}
+	upperalpha = 'A';
+	while (upperalpha <= 'Z')
+	{
+		putchar(upperalpha);
+		upperalpha++;
+	}
+
+	putchar('\n');
 
 	return (0);
 }
