@@ -6,7 +6,13 @@
   */
 int main(void)
 {
-	write(1, "_putchar\n", 9);
+	int i;
+	char p[] = "_putchar";
 
+	for (i = 0; i < 9; i++)
+		{
+		_putchar(p[i]);
+		}
+		_putchar('\n');
 	return (0);
 }
