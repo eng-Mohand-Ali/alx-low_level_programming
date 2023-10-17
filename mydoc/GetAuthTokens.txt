@@ -1,0 +1,41 @@
+ public async Task<ModelUsers.AuthToken> GetAuthTokens(ModelUsers.Login login)
+        {
+            var _password =_enc.Encrypt(login.Password);
+            var _email=_enc.Encrypt(login.Email);
+            AuthToken token = new();
+            try
+            {
+                
+                using (SqlConnection conn = new SqlConnection(_config.GetConnectionString("conn")))
+                {
+                    await conn.OpenAsync();
+                    SqlCommand cmd = new SqlCommand($"select *from Customers where email like '{_email}' And password like '{_password}' ", conn);
+                    SqlDataReader dr = await cmd.ExecuteReaderAsync();
+                    while (await dr.ReadAsync())
+                    {
+                        var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+                        var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                        var tokeOptions = new JwtSecurityToken(
+                            // issuer: _config["Jwt:issuer"],
+                            //audience: _config["Jwt:audience"],
+                            expires: DateTime.Now.AddHours(1),
+                            signingCredentials: signinCredentials
+                        );
+                        token.CustomerId = dr.GetInt32(dr.GetOrdinal("CustomerId"));
+                        token.CustomerName = dr.GetString(dr.GetOrdinal("CustomerName"));
+                        token.ImgUrl = dr.GetString(dr.GetOrdinal("ImgUrl"));
+                        token.Mobile = dr.GetString(dr.GetOrdinal("Mobile"));
+                        token.Email =_enc.Decrypt( dr.GetString(dr.GetOrdinal("Email")));
+                        token.Token = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+
+                    }
+                    await CloseData(conn, dr);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           return token;
+        }
